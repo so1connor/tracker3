@@ -1,0 +1,59 @@
+<HTML>
+<head>
+<script src="services_test.js" type="text/javascript"></script>
+</head>
+<body onload="javascript:load()">
+<b>Tracker Test Page</b>
+<hr>
+SUBSCRIBE
+<FORM method="POST" action= "journey_3.php">
+
+command<INPUT type="text" name="command" value="subscribe" readonly="readonly" size="32"><BR>  
+user<INPUT type="text" name="user" size="32"><BR>
+<INPUT type="submit" value="Submit">
+  </FORM>
+
+<hr>
+ADD WAYPOINT
+<FORM method="POST" action= "journey_3.php">
+
+command<INPUT type="text" name="command" value="add_waypoints" readonly="readonly" size="32"><BR>  
+userid<INPUT type="text" name="userid" size="32" value="131"><BR>
+token<INPUT type="text" name="token" size="32" value="14d3b2e88ae4e3"><BR>
+
+time<INPUT id = "time0" type="text" name="time[]" size="32"><BR>
+lat<INPUT type="text" name="lat[]" size="32" value="54.2"><BR>
+lon<INPUT type="text" name="lon[]" size="32" value="-0.1"><BR>
+alt<INPUT type="text" name="alt[]" size="32" value="100"><BR>
+acc<INPUT type="text" name="acc[]" size="32" value="10.1"><BR>
+jid<INPUT type="text" name="jid[]" size="32" value="0"><BR>
+
+<INPUT type="submit" value="Submit">
+  </FORM>
+
+<hr>
+
+CHANGE USER
+<FORM method="POST" action= "journey_3.php">
+command<INPUT type="text" name="command" value="login" size="32"><BR>  
+user<INPUT type="text" name="user" size="32"><BR>
+password<INPUT type="text" name="password" size="32"><BR>
+token<INPUT type="text" name="token" size="32"><BR>  
+<INPUT type="submit" value="Submit">
+  </FORM>
+<hr>  
+GET JOURNEYS
+<FORM method="POST" action= "journeys_mobile.php">
+command<INPUT type="text" name="command" value="get_journeys" readonly="readonly" size="32"><BR>  
+userid<INPUT type="text" name="userid" size="32"><BR>
+<INPUT type="submit" value="Submit">
+  </FORM>
+<hr>  
+SET JOURNEYS FLAGS
+<FORM method="POST" action= "fix_journey_text.php">
+command<INPUT type="text" name="command" value="flag" readonly="readonly" size="32"><BR>  
+userid<INPUT type="text" name="userid" size="32"><BR>
+<INPUT type="submit" value="Submit">
+  </FORM>
+</body>
+</HTML>

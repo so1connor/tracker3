@@ -1,0 +1,71 @@
+body {font-family:arial; font-size: 11pt; margin: 0px;}
+div {margin:0px; padding: 0px; border:none black 1px;}
+div.map0 {border:none black 1px; float:left; background: #eee; width: 100px; height: 100px;}
+div.list {border:none black 1px; float:left; width: 100px; overflow:auto; }
+div.right {border:none black 1px; float:left; background: #eee; width: 100px; height: 100px;}
+
+div.dragger {border-left: solid gray 1px; border-right: solid gray 1px; float:left; width:8px; height: 300px; cursor:move;}
+
+div.floater {float: left; background: red; color: white; position:absolute; z-index:100; }
+div.login {margin: 0 0 0 15;}
+div.logout {margin: 0 0 0 15;}
+#loggedin {margin-left: 15px; color: black;}
+div.top {margin: 0px; padding: 0 0 10 0; border: none gray 1px; background: #aaa;}
+h1 {margin: 0px 0px 0px 15px; color: #fff; font-family: verdana; font-style: italic;}
+h2 {margin: 10px 0px 0px 15px; color:#aaa; font-family: arial;}
+p {margin: 0px 0px 0px 15px; font-family:arial; }
+
+#username {font-weight: bold;}
+#debug {color: #aaa;}
+
+a {color:#aaa; text-decoration: none;}
+a:hover {color:#666; text-decoration: underline;}
+textarea {font-family:arial; font-size: 10pt; color:#999;}
+img {border-style: none;}
+
+div.journey {position: relative;}
+div.container {margin-left: 15px; margin-right: 40px; }
+div.float-right {float:right;}
+div.journey-edit {margin-right: 5px;}
+
+textarea.journey-textarea {margin-left: 15px;}
+div.journey-description {margin-left: 15px; color:#ccc; font-family: helvetica; font-weight: lighter;}
+a.journey-title {margin-left: 2px; }
+span.journey-statistics {margin-left: 5px; color:#aaa; font-family: helvetica; font-weight: lighter;}
+img.arrow {position: absolute; left: 0px; top: 2px; }
+
+div.marker {border: none;}
+textarea.marker-textarea {margin-left: 15px;}
+
+div.marker a {margin-left: 15px; font-size: 10pt;}
+div.marker img {float:right; margin-top: 2px;}
+div.marker-description {margin-left: 15px; color:#999; font-size: 10pt;}
+div.marker-speed0 {display:inline-block; margin: 0 0 0 3; width:0px; height: 10px; border: solid gray 1px; /* background:#aaaaaa;*/}
+div.marker-speed1 {display:inline-block; margin: 0px; border: none; width:100px; height: 15px; color: black; }
+
+
+
+.info-title {margin: 0px;}
+
+.info-statistics {margin-left: 0px; color:#aaa;}
+
+.info-textarea {margin-left: 0px;}
+
+.info-description {margin-left: 0px; color:#999;}
+
+.info-edit {margin-left: 0px;}
+
+.info-delete {margin-left: 0px; float: right;}
+
+
+
+/*div.slider {width:100; height: 25; border: 1px solid gray;}*/
+
+
+
+td {border: 1px solid gray;}
+
+table {border-collapse: collapse;}
+
+tr.header {color:black;}
+
