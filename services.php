@@ -3,10 +3,14 @@
 // mysql interfacing logic
 include 'vector.php';
 
-function get_journeys($userid)
+
+
+function get_journeys($user)
 {
-$query='SELECT journeys.jid,journeys.start_time,journeys.end_time,journeys.distance,journeys.flag,journeys.count,journeys.timezone_offset,journey_text.description FROM journeys LEFT JOIN journey_text ON journeys.jid=journey_text.jid WHERE journeys.userid="'.$userid.'" ORDER BY journeys.start_time DESC';
-$result=mysql_query($query) or setResponse(500, mysql_error());
+$sorts = array("start_time", "envelope");
+$query='SELECT journeys.jid,journeys.start_time,journeys.end_time,journeys.distance,journeys.flag,journeys.count,journeys.timezone_offset,journey_text.description FROM journeys LEFT JOIN journey_text ON journeys.jid=journey_text.jid WHERE journeys.userid='.$user->id.' ORDER BY journeys.'.$sorts[$user->sort].' DESC';
+$result=mysql_query($query) or setResponse(500, mysql_error().$query);
+//setResponse(500, mysql_error().$query);
 return $result;
 }
 
@@ -110,7 +114,7 @@ mysql_query($query) or setResponse(500,mysql_error());
 function setJourneyText($id, $description)
 	{
 	$description=mysql_real_escape_string($description);
-	$query='REPLACE INTO journey_text (journey_id,description) VALUES ('.$id.',"'.$description.'")';
+	$query='REPLACE INTO journey_text (jid,description) VALUES ('.$id.',"'.$description.'")';
 	$result = mysql_query($query) or setResponse(500,mysql_error());
 	return $result;
 	}
@@ -143,9 +147,9 @@ function deleteJourney($id)
 	{
 	$query='DELETE FROM journeys WHERE id='.$id.' LIMIT 1';
 	$result = mysql_query($query) or setResponse(500,mysql_error());
-	$query='DELETE FROM journey_text WHERE journey_id='.$id.' LIMIT 1';
+	$query='DELETE FROM journey_text WHERE jid='.$id.' LIMIT 1';
 	$result = mysql_query($query) or setResponse(500,mysql_error());
-	$query='DELETE FROM waypoints WHERE journey_id='.$id;
+	$query='DELETE FROM waypoints WHERE jid='.$id;
 	$result = mysql_query($query) or setResponse(500,mysql_error());
 	
 	return $result;
@@ -172,25 +176,26 @@ function check_userid($userid)
 
 function check_userid_journey($id, $userid)
 	{
-	$query='SELECT id FROM journeys WHERE id='.$id.' AND userid='.$userid;
+	$query='SELECT jid FROM journeys WHERE jid='.$id.' AND userid='.$userid;
 	$result = mysql_query($query) or setResponse(500,mysql_error());
 	$row=mysql_fetch_row($result);
 	return !$row ? false:true;
 	}
 
-function get_userid($user, $password)
+function get_user($username, $password)
 	{
-	if($user==null || $password==null)return false;
-	$query='SELECT id FROM users WHERE user="'.$user.'" AND password="'.$password.'"';
+	if($username==null || $password==null)return false;
+	$query='SELECT id, units, sort FROM users WHERE user="'.$username.'" AND password="'.$password.'"';
 	$result = mysql_query($query) or setResponse(500,mysql_error());
-	$row=mysql_fetch_row($result);
-	return $row ? $row[0]: 0;
+	$row=mysql_fetch_object($result);
+	return $row;
+//	return $row ? $row[0]: 0;
 	}
 
-function update_settings($userid, $units)
+function update_settings($userid, $units, $sort)
 	{
 	if($userid==null)return false;
-	$query='UPDATE users SET units ='.$units.' WHERE id='.$userid;
+	$query='UPDATE users SET units ='.$units.', sort ='.$sort.' WHERE id='.$userid;
 	$result = mysql_query($query) or setResponse(500,mysql_error());
 	return $result;
 	}
@@ -198,10 +203,9 @@ function update_settings($userid, $units)
 function get_settings($userid)
 	{
 	if($userid==null)return false;
-	$query='SELECT units FROM users WHERE id='.$userid.' LIMIT 1';
+	$query='SELECT units, sort FROM users WHERE id='.$userid.' LIMIT 1';
 	$result = mysql_query($query) or setResponse(500,mysql_error());
-	$row=mysql_fetch_row($result);
-	return $row ? $row[0]: -1;
+	return $result;
 	}
 
 
@@ -221,15 +225,17 @@ curl_setopt($ch, CURLOPT_URL, 'http://api.geonames.org/timezoneJSON?lat='.$latit
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 //curl_setopt($ch, CURLOPT_HEADER, 0);
 
-$result = curl_exec($ch); 
+$result = curl_exec($ch);
 if($result == false) {
 	setResponse(500, 'error loading geonames API');
 	}
 $json = json_decode($result,true);
+//setResponse(500, $result);
 curl_close($ch);
+
 $tzid = $json["timezoneId"];
 if(!isset($tzid)) {
-	setResponse(500, 'no timezone ID');
+	setResponse(500, 'no timezoneId');
 	} else {
 //	try {
 	$date = new DateTime('00:00:00', new DateTimeZone($tzid));
@@ -238,8 +244,8 @@ if(!isset($tzid)) {
 //    exit(1);	
 		
 //	}
-	$date->setTimestamp($time/1000);
-	return $date->getOffset();
+	$date -> setTimestamp($time/1000);
+	return $date -> getOffset();
 //	return $tzid;
 	}
 }

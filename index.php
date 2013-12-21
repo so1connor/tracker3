@@ -34,6 +34,7 @@
 <div id="loggedin" style="display: block">
 Logged in as <span id="username"><?php echo $_SESSION['username']?></span>&nbsp;<a href="logout.php">Logout</a>
 <select id="units"><option>Kilometres</option><option>Miles</option></select>
+<select id="sort"><option>Date</option><option>Route</option><option>Distance</option><option>Speed</option></select>
 <div id="debug"></div>
 </div>
 </div>
@@ -48,31 +49,33 @@ Logged in as <span id="username"><?php echo $_SESSION['username']?></span>&nbsp;
 <script type="text/javascript">session=0;</script>
 
 <div id="login" class="login">
-user<INPUT id="user" name="user" type="text" value="">
-password<INPUT id="password" name="password" type="password" value="">
-<INPUT id="login_button" type="submit" value="Log in">
-<div id="debug"></div>
+	user<INPUT id="user" name="user" type="text" value="">
+	password<INPUT id="password" name="password" type="password" value="">
+	<INPUT id="login_button" type="submit" value="Log in">
+	<div id="debug"></div>
 </div>
+
 <div id="loggedin" style="display:none">
-Logged in as <span id="username"></span>&nbsp;<a href="logout.php">Logout</a>
-<select id="units"><option>Kilometres</option><option>Miles</option></select>
-<div id="debug"></div>
+	Logged in as <span id="username"></span>&nbsp;<a href="logout.php">Logout</a>
+	<select id="units"><option>Kilometres</option><option>Miles</option></select>
+	<select id="sort"><option>Date</option><option>Route</option><option>Distance</option><option>Speed</option></select>
+	<div id="debug"></div>
 </div>
+
 </div>
 
 <div class="list" id="list">
-<h2>What is it?</h2>
-<!--img src="images/blackberry.png" style="float:left;"-->
-<p>Track My Run lets you record your outdoor trips with a mobile phone and then view and edit them on the web with Google Maps.</p>
-<h2>Why do I need it?</h2>
-<p>If you are a runner you can use it to see how your training is progressing, your speed and timing is recorded. If you walk outdoors you can see exactly where you went and add notes and photos to the trip. Because the service uses a mobile phone, you don't need to carry extra gear.</p>
-<h2>How does it work?</h2>
-<p>You need a mobile phone with GPS. Here is a <a href="mobiles.html">list</a> of compatible devices. You download an app to your phone. When it is installed it will ask you to register and then you are ready to go. The app will record your when you are running, when an internet connection is available your tracks will be uploaded to the server. You can login here to see the results.
-</p>
-<h2>How much does it cost?</h2>
-<p>
-	The service is free up to 1000 footprints. You will be charged for data traffic by your mobile phone operator. But the service doesn't use much data to record your movements. If you are on contract and have a data plan included it won't cost you anything. If you are on PAYG (pay as you go), you get charged per MB of data. The service can store up to 5000 footprints with 1MB of data. What you will be charged depends on the operator. See <a href="dataplans.html">here</a> for details of UK operator data charges.
-</p>
+	<h2>What is it?</h2>
+	<!--img src="images/blackberry.png" style="float:left;"-->
+	<p>Track My Run lets you record your outdoor trips with a mobile phone and then view and edit them on the web with Google Maps.</p>
+	<h2>Why do I need it?</h2>
+	<p>If you are a runner you can use it to see how your training is progressing, your speed and timing is recorded. If you walk outdoors you can see exactly where you went and add notes and photos to the trip. Because the service uses a mobile phone, you don't need to carry extra gear.</p>
+	<h2>How does it work?</h2>
+	<p>You need a mobile phone with GPS. Here is a <a href="mobiles.html">list</a> of compatible devices. You download an app to your phone. When it is installed it will ask you to register and then you are ready to go. The app will record your when you are running, when an internet connection is available your tracks will be uploaded to the server. You can login here to see the results.
+	</p>
+	<h2>How much does it cost?</h2>
+	<p> The service is free up to 1000 footprints. You will be charged for data traffic by your mobile phone operator. But the service doesn't use much data to record your movements. If you are on contract and have a data plan included it won't cost you anything. If you are on PAYG (pay as you go), you get charged per MB of data. The service can store up to 5000 footprints with 1MB of data. What you will be charged depends on the operator. See <a href="dataplans.html">here</a> for details of UK operator data charges.
+	</p>
 </div>
 <?php } ?>
 

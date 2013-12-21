@@ -1,9 +1,0 @@
-body {font-family:arial; font-size: 11pt; margin: 0px;}
-div {margin:0px; padding: 0px; border:none black 1px;}
-div.journey {position: relative;}
-div.container {margin-left: 15px; margin-right: 40px;}
-a {color:blue; text-decoration: none;}
-a:hover {color:red; text-decoration: underline;}
-img.arrow {border-style: none; position: absolute; left: 0px; top: 0px;}
-div.float-right {float:right;}
-span.journey-statistics {margin-left: 5px; color:#aaa;}

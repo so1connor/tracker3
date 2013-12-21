@@ -12,7 +12,7 @@ _markernode=document.createElement("div"),
 _divnode=document.createElement("div"),
 //_textnode=document.createElement("textarea"),
 _container=document.createElement("div"),
-open_journey = null,
+//open_journey = null,
 vector0=new Vector3D(),
 vector1=new Vector3D(),
 speed_offset,
@@ -24,83 +24,66 @@ max_speed_width = 200,
 //	var minPerKm = j.d===0 ? 0 : (unit.minfactor*j.dt/j.d);
 //	j.statistics.innerHTML = timeutils.getDistanceString(j.d) + unit.name + timeutils.getHourString(j.dt) + "h " + timeutils.getMinuteString(minPerKm) + unit.speed;
 //},
-setSpeedAndDistance = function (j) {
-	if(j.markers === undefined) {
+measureJourney = function (j) {
+	if(j.markers === undefined || j.markers.length < 2) {
 		return;
 	}
-	var mlength=j.markers.length,
-	dt,
-	dx,
-	dz,
-	speed,
+	var count = j.markers.length,
 	speeds = [],
 	marker0 = j.markers[0],
 	marker1 = marker0,
-	maxspeed = 0,
-	//	ascent = 0,
 	distance = 0;
-	if(mlength === 0) {
-		return;	
+	marker0.speed = 0;
+//	marker0.metrics = {speed:0,dt:0,dx:0,dz:0};
+	speeds.push(0); // this is the speed of the first marker which is of course zero
+	vector0.fromLatLng(marker0.lat,marker0.lon);
+	j.metrics = {duration: 0, distance: 0, average_speed: 0, max_speed: 0, min_alt: 1000, max_alt: 0};
+		
+	for(var i=1; i < count; i++) {
+		marker0 = marker1;
+		marker1 = j.markers[i];
+		var dt = marker1.t - marker0.t;
+		vector1.fromLatLng(marker1.lat,marker1.lon); //load new vector
+		var dx = vector1.distanceFrom(vector0);
+		var speed = dt > 0 ? (1000 * dx)/dt : 0;
+//		var dz = marker1.alt - marker0.alt;
+		if(marker1.alt > j.metrics.max_alt) {
+			j.metrics.max_alt = marker1.alt;
+		} else if(marker1.alt < j.metrics.min_alt) {
+			j.metrics.min_alt = marker1.alt;
 		}
-	marker0.speed=0;
-	marker0.dz = 0;
-	marker0.dt = 0;
-	marker0.dx = 0;
-	
-	speeds.push(0);
-	if(mlength>1) {
-		vector0.fromLatLng(marker0.lat,marker0.lon);
-		for(var i=1; i < mlength; i++)
-			{
-			marker0=marker1;
-			marker1=j.markers[i];
-			dt = marker1.t - marker0.t;
-			//dt *= 0.001; // convert milliseconds to seconds
-			vector1.fromLatLng(marker1.lat,marker1.lon); //load new vector
-			dx=vector1.distanceFrom(vector0);
-			if(dt > 0) {
-				speed = (1000*dx)/dt; //metres per second
-				} else {
-					speed = 0;
-				}
-			dz=marker1.alt-marker0.alt;
-			//speeds.push(speed);
-			distance += dx;
-			vector0.copyVector(vector1); //save for next time
-			marker0.dz = dz;
-			marker0.dt = dt;
-			marker0.dx = dx;
-			//			if(dz > 0) {
-			//				ascent += dz;
-			//				}					
-			marker1.speed = speed;
-			speeds.push(speed);
-			if(speed > maxspeed) {
-				maxspeed = speed;
-				}				
+		distance += dx;
+		vector0.copyVector(vector1); //save for next time
+		marker1.speed = speed;
+		marker1.dt = dt;
+		marker1.dx = dx;
+		speeds.push(speed);
+		if(speed > j.metrics.max_speed) {
+			j.metrics.max_speed = speed;
 			}
-		j.d = distance;
-		j.dt = j.markers[mlength-1].t - j.markers[0].t;
-		j.speed = j.dt === 0 ? 0 : j.d*1000/j.dt;
-		j.speeds = speeds;
-		//		j.ascent = ascent;
-		j.maxspeed = maxspeed;
 		}
+	j.metrics.distance = distance; // total distance
+	j.metrics.duration = j.markers[count-1].t - j.markers[0].t; // total duration
+	j.metrics.average_speed = j.metrics.duration === 0 ? 0 : distance * 1000/j.metrics.duration;
+	j.speeds = speeds;
 	},
-setAltitudeBounds = function(j) {
-	var min_alt = 1000,
-	max_alt = 0;
-	for(var i=j.markers.length - 1; i >=0 ; i--) {
-		var alt = j.markers[i].alt;
-		if(alt > max_alt) {
-			max_alt = alt;
-		} else if(alt < min_alt) {
-			min_alt = alt;
-		}
-	}
-	j.max_alt = max_alt;
-	j.min_alt = min_alt;
-	},
+// setAltitudeBounds = function(j) {
+// 	if(j.marker === undefined) {
+// 		return;
+// 	}
+// 	var min_alt = 1000,
+// 	max_alt = 0;
+// 	for(var i=j.markers.length - 1; i >=0 ; i--) {
+// 		var alt = j.markers[i].alt;
+// 		if(alt > max_alt) {
+// 			max_alt = alt;
+// 		} else if(alt < min_alt) {
+// 			min_alt = alt;
+// 		}
+// 	}
+// 	j.max_alt = max_alt;
+// 	j.min_alt = min_alt;
+// 	},
 setAverageSpeeds = function(j, count) {
 	if(j.markers === undefined) {
 		return;
@@ -108,32 +91,32 @@ setAverageSpeeds = function(j, count) {
 
 	var mlength = j.markers.length,
 	N,
-	marker,
+//	marker,
 	offset,
 	maxspeed = 0,
-	k,
-	average = 0,
-	speed;
-	if(count <=1) return;
-	if(mlength <= 1) return; // nothing to do....
+	//k,
+	average = 0;
+	//speed;
+	if(count <= 1 || mlength <= 1) {
+		return; // nothing to do....
+		}
 	
 	count = count > mlength ? mlength : count;
 	N = count/2;
-	if(N < 1) return;
+	if(N < 1) {
+		return;
+		}
 	offset = N;
 	for(var i=0; i < N; i++) {
 		average += j.markers[i].speed;
 	}
 	//	alert(average + " " + N);
-	for(k=0; k < mlength; k++) {
-		speed = average / N;
+	for(var k=0; k < mlength; k++) {
+		var speed = average / N;
 		j.markers[k].speed = speed;
 		if(speed > maxspeed) {
 			maxspeed = speed;
 			}
-		//		if(k==0) {
-		//			alert(j.markers[k].speed);
-		//		}
 		if(N < count) {
 			average += j.markers[N].speed;
 			N++;
@@ -159,22 +142,14 @@ _rarrow.className="arrow";
 _darrow.className="arrow";
 _title.className="journey-title";
 _title.href="#";
-
 _statistics.className="journey-statistics";
 _editnode.className="journey-edit";
 _editnode.innerHTML="edit";
 _editnode.href="#";
-//_textnode.className="journey-textarea";
 _delnode.src="images/whitex.png";
 _divnode.className="journey-description";
 _divnode.style.display="none";
 _container.className="container";
-//_delnode.onmouseout=function () {
-//	this.src = 'images/whitex.png'; 
-//	};
-//_delnode.onmouseover=function () {
-//	this.src = 'images/redx.png'; 
-//	};
 
 
 return {
@@ -186,17 +161,19 @@ return {
 		node.removeChild(journey.node);
 		node.removeChild(journey.markernode);
 		},
-	init : function (j) {
+	decorate : function (j) {
+		var timezone_offset = j.tz >= 0 ? "+" : "";
+		timezone_offset += j.tz/3600;
 		j.loadstate=0;
-		j.tz *= 1000;
-		j.speed = j.dt === 0 ? 0 : j.d*1000/j.dt;
+		j.tz *= 1000; // turn seconds into milliseconds
+		//j.speed = j.dt === 0 ? 0 : j.d*1000/j.dt;
 		j.node=_node.cloneNode(true);
 		j.delnode=_delnode.cloneNode(true);
 		j.editnode=_editnode.cloneNode(true);
 		j.rarrow=_rarrow.cloneNode(true);
 		j.darrow=_darrow.cloneNode(true);
 		j.title=_title.cloneNode(true);
-		j.title.innerHTML=j.count + " " +j.jid+" "+utils.getDateString(j.t); //j.name;
+		j.title.innerHTML=j.count + "[" +j.jid+"] "+utils.getDateString(j.t) + "[" + timezone_offset + "]"; //j.name;
 		//j.title.innerHTML=utils.getDateString(j.t); //j.name;
 		j.statistics=_statistics.cloneNode(true);
 		j.floatright=_floatright.cloneNode(true);
@@ -246,9 +223,7 @@ return {
 			this.src = 'images/redx.png'; 
 			};
 		j.darrow.onclick=function() {
-			open_journey=null;
-			j.node.replaceChild(j.rarrow,j.darrow);
-			j.markernode.style.display="none";
+			tracker.closeJourney(j);
 			};
 		
 		j.node.onmouseover=function(){
@@ -267,16 +242,17 @@ return {
 			};
 		
 		j.rarrow.onclick=function() {
-			if(open_journey!==null && open_journey!==j) { 	// if another journey is open
-				open_journey.darrow.onclick();				// close it
-				}
-			open_journey=j;									// this journey
-			j.node.replaceChild(j.darrow,j.rarrow);			// is open
-			j.markernode.style.display="block";				// show the markers (if they have been loaded)
-			jm.setSpeedDivs();								// update the width of the speed bars
+			tracker.openJourney(j);
+			// if(open_journey!==null && open_journey!==j) { 	// if another journey is open
+			// 	open_journey.darrow.onclick();				// close it
+			// 	}
+			// open_journey=j;									// this journey
+			// j.node.replaceChild(j.darrow,j.rarrow);			// is open
+			// j.markernode.style.display="block";				// show the markers (if they have been loaded)
+			// jm.setSpeedDivs(j);								// update the width of the speed bars
 	
-			j.title.onclick();
-			// don't add code here... it will run before previous line has completed
+			// j.title.onclick();
+			// // don't add code here... it will run before previous line has completed
 			};
 		
 		j.divnode.onclick = function ()	{
@@ -288,58 +264,45 @@ return {
 					utils.sendMessage("command=setJourneyText&jid="+j.jid+"&description="+encodeURIComponent(new_text));
 					}
 				});
-			};			
+			};
+
+		j.title.onclick = function() {
+			tracker.showJourney(j);
+			};
+
+		j.delnode.onclick = function () {
+			tracker.deleteJourney(j);
+			};
+
+		j.update = function() {
+			measureJourney(j);
+			//setAltitudeBounds(j);
+			j.statistics.innerHTML = utils.getDistanceString(j.d);
+			};
+		j.update();
 		},
-	setStatistics : function(j) {
-		j.statistics.innerHTML = utils.getDistanceString(j.d);
-		// + utils.getHourString(j.dt) + "h " + utils.getSpeedMinutes(j.speed) + " " + utils.getSpeedMinuteUnit();
-		},
-	rebuild : function (j) {
-		if(j.markers === undefined) {
+	// setStatistics : function(j) {
+	// 	j.statistics.innerHTML = 
+	// 	// + utils.getHourString(j.dt) + "h " + utils.getSpeedMinutes(j.speed) + " " + utils.getSpeedMinuteUnit();
+	// 	},
+	setSpeedDivs : function (j) {
+		if(j === null || j.metrics === undefined) {
+			//console.log(j);
 			return;
-			}
-		setSpeedAndDistance(j);
-		setAltitudeBounds(j);
-		//setAverageSpeeds(j,6);
-		},
-	setSpeedDivs : function () {
-		if(open_journey === null || open_journey.markers === undefined) {
-			return;
-			}
-		var j = open_journey,
-		mlength=j.markers.length,
-		speed_width,
-		dspeed;
-		
-		if(speed_offset === undefined) {
-			speed_offset = j.markers[0].titlenode.offsetWidth + 35;
-			}
-		
-		speed_width = j.node.clientWidth - speed_offset;
-		
-		if(speed_width > max_speed_width) {
-			speed_width = max_speed_width;
-			}
-		
-		if(j.speed_width === speed_width) {
-			return;
-			}
-		
-		j.speed_width = speed_width;
-			
-		//		REMEMBER TO UPDATE MARGIN VALUE !! 
-		dspeed = speed_width / j.maxspeed;
+		}
+		var w = j.node.clientWidth - j.markers[0].titlenode.clientWidth + 35;
+		//w = w > 500 ? 500 : w;
+		//console.log(w);
+		var factor = w / j.metrics.max_speed;
+
 		//		alert(j.node.clientWidth + " " + j.markers[0].titlenode.offsetWidth);
 		//speedwidth = j.markers[0].titlenode.style.width*100 / j.node.clientWidth;
 		//alert("title="+j.markers[0].titlenode.style.width);
 		//		speedwidth = j.node.clientWidth / 2;
 
-		for(var i=0; i < mlength; i++) 	{
-		//			var speed = j.markers[i].speed,
-		//ispeed = speed * speedwidth / j.maxspeed;
-		//		ispeed = speed*66 / j.maxspeed;
-			j.markers[i].speed0.style.width = j.markers[i].speed * dspeed + 'px';
-		//j.markers[i].speed1.style.width = (50 - ispeed) + '%'; //(speedwidth - ispeed) + 'px';
+		for(var i=0; i < j.markers.length; i++) 	{
+			j.markers[i].speed0.style.width = j.markers[i].speed * factor;
+			
 		}
 	}
 };
