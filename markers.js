@@ -16,7 +16,7 @@ window.marker_module = function() {
 
 
 	return {
-		init : function (m,j) {
+		decorate : function (m,j) {
 			m.journey=j; // this is the parent object
 			m.t += j.tz;
 			m.node=_node.cloneNode(true);
@@ -40,7 +40,22 @@ window.marker_module = function() {
 				m.divnode =_divnode.cloneNode(true);
 				m.divnode.innerHTML = m.text;
 				m.node.appendChild(m.divnode);
+				m.divnode.onclick = function() {
+					tracker.openMarkerEditor(m);
+					};
 				}
+			m.node.onmouseover = function(){
+				tracker.showMarker(m);
+				};
+			m.node.onmouseout=function(){
+				tracker.hideMarker(m);
+				};
+			m.titlenode.onclick=function() {			
+				tracker.openMarker(m,j);
+				};
+			m.delnode.onclick=function() {
+				tracker.deleteMarker(m,j);
+				};
 			},
 		getStatistics : function (m) {
 			var text="<table><tr class=\"header\">";
@@ -54,8 +69,8 @@ window.marker_module = function() {
 				return;
 				}
 			if(m.divnode === undefined) {
-				m.divnode=_divnode.cloneNode(true);
-				m.divnode.innerHTML=m.text;
+				m.divnode = _divnode.cloneNode(true);
+				m.divnode.innerHTML = m.text;
 				m.node.appendChild(m.divnode);
 				}
 			m.divnode.onclick = function() {
@@ -63,8 +78,8 @@ window.marker_module = function() {
 					if(new_text.length === 0 )	{
 						info_node.resetText(m);
 						}
-					if(new_text!==m.text)	{
-						m.text=new_text;
+					if(new_text !== m.text)	{
+						m.text = new_text;
 						info_node.setText(m,new_text);
 						utils.sendMessage("command=setMarkerText&jid="+j.jid+"&id="+m.id+"&description="+encodeURIComponent(new_text));
 						}
