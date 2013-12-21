@@ -14,8 +14,8 @@ window.info_node_module=function () {
 	//marker = null,
 	getStatistics = function (m) {
 		var time = new Date(m.t),
-		text = "time: " + time.toString() + " ms<br>id: " + m.jid + "<br>latitude: " + m.lat + " &deg; longitude: " + m.lon + "&deg;<br>altitude: " + m.alt + " m<br>accuracy: " + m.acc + " m";
-
+		text = "time: " + time.toString() + "<br>id: " + m.id + "<br>latitude: " + m.lat + " &deg; longitude: " + m.lon + "&deg;<br>altitude: " + m.alt + " m<br>accuracy: " + m.acc + " m";
+		text += (" speed = " + m.speed);
 //		var text="<table><tr class=\"header\">";
 //		text=text+"<td>time</td><td>latitude</td><td>longitude</td><td>altitude</td><td>accuracy</td></tr>";
 //		text=text+"<tr><td>"+m.t+"</td><td>"+m.lat+"</td><td>"+m.lon+"</td><td>"+m.alt+"</td><td>"+m.acc+"</td></tr></table>";

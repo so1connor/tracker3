@@ -277,7 +277,7 @@ return {
 		j.update = function() {
 			measureJourney(j);
 			//setAltitudeBounds(j);
-			j.statistics.innerHTML = utils.getDistanceString(j.d);
+			j.statistics.innerHTML = utils.getDistanceString(j.d) + " " + j.metrics.max_speed;
 			};
 		j.update();
 		},
@@ -301,7 +301,9 @@ return {
 		//		speedwidth = j.node.clientWidth / 2;
 
 		for(var i=0; i < j.markers.length; i++) 	{
-			j.markers[i].speed0.style.width = j.markers[i].speed * factor;
+			//j.markers[i].speed0.style.width = j.markers[i].speed * factor;
+			j.markers[i].speed0.style.width = j.markers[i].speed * 80 / j.metrics.max_speed + "%";
+			
 			
 		}
 	}

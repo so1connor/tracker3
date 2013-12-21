@@ -153,7 +153,7 @@ window.tracker = function () {
 					var j=journeys[i];
 					jm.decorate(j);
 					j.index = i;
-					//jm.setStatistics(j);
+					jm.setSpeedDivs(j);
 					jm.attachJourney(ui.panel,j);
 					//attachJourneyEvents(j,i);
 					}
@@ -214,7 +214,7 @@ return {
 			ui.panel.scrollTop = h - h0;
 			}
 		},
-	openMarkerEditor : function(m) {
+	openMarkerEditor : function(m,j) {
 		utils.setEditor(m.node,m.divnode, "marker-textarea", m.divnode.offsetWidth - 15, function(text) {
 			if(text.length === 0 )	{
 				info_node.resetText(m);
@@ -227,7 +227,7 @@ return {
 			});
 		},
 	resize : function() {
-		jm.setSpeedDivs(open_journey);
+		//jm.setSpeedDivs(open_journey);
 		graph.resize();
 		},
 	deleteJourney : function(j) {
@@ -289,7 +289,7 @@ return {
 		j.markernode.style.display="block";				// show the markers (if they have been loaded)
 		jm.setSpeedDivs(j);								// update the width of the speed bars
 		j.title.onclick();
-		console.log(open_journey)
+		//console.log(open_journey)
 		// don't add code here... it will run before previous line has completed
 		},
 	closeJourney : function(j) {
