@@ -4,9 +4,8 @@ var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","D
 unitselection = 0,  //default to km 
 units = [{name:"km ",speed:"m/km ",metres: 1000},{name:"mi ", speed:"m/mi ",metres: 1600}],
 unit = units[0],
-sort = 0,
 _textnode = document.createElement("textarea");
-scriptname="main.php",							/* the server script */
+scriptname="journeys.php",							/* the server script */
 getLoader =  function () {
 	var object = null;
 	// branch for native XMLHttpRequest object
@@ -73,18 +72,16 @@ return {
 		  	setHttpStatus(document.getElementById("status"),xmlhttp.readyState);
 		  	if (xmlhttp.readyState==4) {	
 		    		if (xmlhttp.status==200) {
-		    			//console.log(xmlhttp.responseText);
 						//alert(xmlhttp.responseText.substr(0,500));
 						try {
 							json=JSON.parse(xmlhttp.responseText);
 						} catch (error) {
-							alert("json parse error = ["+ error + "] ");//+xmlhttp.responseText);
-							return;
+							alert("json parse error = ["+error + "] "+xmlhttp.responseText);
 						}
 //						if(handleResponseCode(json)) {
 //							return;
 //						}
-						if(callback !== undefined) {
+						if(callback!==undefined) {
 							callback(json);
 						} else {
 							//alert(json.response);
@@ -111,16 +108,9 @@ return {
 		return distance1 + unit.name;
 	},
 	setUnit : function (i) {
-		//console.log(i);
 		unitselection = i;
 		unit = units[unitselection];
 	},
-	setSort : function (i) {
-		sort = i;
-	},
-	getSort : function () {
-		return sort;
-	},	
 	getUnit : function () {
 		return unitselection;
 	},

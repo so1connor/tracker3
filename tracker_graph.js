@@ -8,7 +8,7 @@ window.graph_module = function () {
 	graph_marker = null,
 	context = null,
 	active = false,
-	margin_left = 5, // what's this
+	margin_left=5,
 	dt,
 	t0,
 	dx,
@@ -21,40 +21,37 @@ window.graph_module = function () {
 	getGraphMarker = function(time) {
 		var markers = graph_journey.markers;
 		if(markers === undefined) {
-			return null;
-			}
+		return null;
+		}
 		
-		for(var i = markers.length - 1; i >= 0 ; i-- ) {
+		for(var i=markers.length-1; i>=0 ; i--) {
 			if(markers[i].t < time) {
 				return markers[i];
 				}
 			}
 		return null;
-		},
+		},	
 	drawGraph = function(journey) {
-		speed_span.innerHTML = "";
-		// y axis is speed
-		// x axis is time
-
+		//alert("draw graph");
 		context.clearRect(0,0,canvas.width,canvas.height);
 		if(journey.markers === undefined || journey.markers.length < 2) {
 			graph_div.style.visibility = "hidden";
-			console.log("no graph to draw");
+			//alert("no graph");
 			return;
 			}
 		var mlength = journey.markers.length,
 		markers = journey.markers,
-		speed_unit = canvas.height * 0.9 / journey.metrics.max_speed,
-		max_alt = journey.metrics.max_alt < 1000 ? 1000 : journey.metrics.max_alt,
-		alt_unit = canvas.height * 0.9 / (max_alt - journey.metrics.min_alt),
-		acc_unit = canvas.height * 0.9 / 100,
+		speed_dy = canvas.height * 0.9 / journey.maxspeed,
+		max_alt = journey.max_alt < 1000 ? 1000 : journey.max_alt,
+		alt_dy = canvas.height * 0.9 / (max_alt - journey.min_alt),
+		acc_dy = canvas.height * 0.9 / 100,
 		origin_x,
-		alt_base = journey.metrics.min_alt * alt_unit;
+		alt_base = journey.min_alt * alt_dy;
 		
 		t0 = markers[0].t;
-		duration = markers[mlength - 1].t - t0;
-		time_unit = (canvas.width - margin_left) / duration;
-		origin_x = margin_left;// + (markers[0].t - t0) * dx;
+		dt = markers[mlength - 1].t - t0;
+		dx = (canvas.width - margin_left) / dt;
+		origin_x = margin_left + (markers[0].t - t0) * dx;
 		
 		
 		graph_journey = journey;
@@ -73,21 +70,20 @@ window.graph_module = function () {
 		context.strokeStyle = "#444";
 		context.lineWidth = 1.0;
 		context.fillStyle = "#999";
-		var y0 = canvas.height - 1;
-		context.moveTo(origin_x,y0 - (markers[0].speed * speed_unit));
+		context.moveTo(origin_x,canvas.height - 1 - (markers[0].speed * speed_dy));
 		for(var i=1; i< mlength; i++) {
-			var x = margin_left + (markers[i].t - t0) * time_unit;
-			context.lineTo(x,y0 - (markers[i].speed * speed_unit));
+			var x = margin_left + (markers[i].t - t0) * dx;
+			context.lineTo(x,canvas.height - 1 - (markers[i].speed * speed_dy));
 			if(markers[i].text !== undefined) {
-				context.fillRect(x-2,1,4,4);
-				}
+			context.fillRect(x-2,1,4,4);
+			}
 		}
 		context.stroke();		
 		context.beginPath();
 		context.strokeStyle = "#f00";
-		context.moveTo(origin_x,canvas.height + alt_base - (markers[0].alt * alt_unit));
+		context.moveTo(origin_x,canvas.height + alt_base - (markers[0].alt * alt_dy));
 		for(var i=1; i< mlength; i++) {
-			context.lineTo(margin_left + (markers[i].t - t0) * time_unit ,canvas.height + alt_base - (markers[i].alt * alt_unit));
+			context.lineTo(margin_left + (markers[i].t - t0) * dx,canvas.height + alt_base - (markers[i].alt * alt_dy));
 		}
 		context.stroke();
 
@@ -100,7 +96,7 @@ window.graph_module = function () {
 		//		}
 		//		context.stroke();
 
-		speed_span.innerHTML = "Average speed " + utils.getSpeedMinutes(graph_journey.metrics.average_speed) + " " + utils.getSpeedMinuteUnit();
+		speed_span.innerHTML = "Average speed " + utils.getSpeedMinutes(graph_journey.speed) + " " + utils.getSpeedMinuteUnit();
 		//		ascent_span.innerHTML = "Ascent " + graph_journey.ascent+ " m";
 		};
 return {
@@ -114,6 +110,7 @@ return {
 		},
 	hideMarker : function() {
 		graph_div.style.visibility = "hidden";
+	
 		},
 	showMarker : function(marker) {
 		graph_div.style.visibility = "visible";
@@ -135,7 +132,7 @@ return {
 			}
 		canvas.width = graph_element.clientWidth;
 		canvas.height = 50;
-		if(graph_journey !== null) {
+		if(graph_journey !==null) {
 			drawGraph(graph_journey);
 			}
 		},	

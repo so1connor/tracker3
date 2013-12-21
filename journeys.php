@@ -29,9 +29,9 @@ return $json;
 
 
 
-function getJourneys($user)
+function getJourneys($userid)
 {
-$result=get_journeys($user);
+$result=get_journeys($userid);
 //echo $result;
 $json="[";
 $first=true;
@@ -47,9 +47,9 @@ while ($row = mysql_fetch_array($result, MYSQL_NUM))
 	$distance=$row[3];
 	$flag=$row[4];
 	$count=$row[5];
-	$tz_offset = $row[6];
+	$tzcount = $row[6];
 	if($flag) {
-		update_journey($id, $flag, $start_time, $end_time, $distance, $count, $tz_offset);
+		update_journey($id, $flag, $start_time, $end_time, $distance, $count, $tzcount);
 		}
 	if(!$first)
 		$json.=',';
@@ -62,7 +62,7 @@ while ($row = mysql_fetch_array($result, MYSQL_NUM))
 	}
 	$json .=',"d":'.$distance;
 	$json .=',"count":'.$count;
-	$json .=',"tz":'.$tz_offset;
+	$json .=',"tz":'.$tzcount;
 	$json .='}';
 	$first=false;
 	}
@@ -70,12 +70,6 @@ $json.=']';
 return $json;
 }
 
-function getSettings($userid) {
-	$result=get_settings($userid);
-	$row = mysql_fetch_array($result, MYSQL_NUM);
-	$json = '{"units":'.$row[0].',"sort":'.$row[1].'}';
-	return $json;
-	}
 
 function setResponse($code,$message)	{
 	die('{"code":'.$code.',"response":"'.$message.'"}');
@@ -95,23 +89,21 @@ mysql_select_db('tracker') or die(setResponse(500,mysql_error()));
 $command=$_POST['command'];
 
 if($command=="login")	{
-	$username=$_POST['user'];
+	$user=$_POST['user'];
 	$password=$_POST['password'];
-	if(preg_match("/^[a-zA-Z0-9]+$/",$username)==0 or preg_match("/^[a-zA-Z0-9]+$/",$password)==0)
+	if(preg_match("/^[a-zA-Z0-9]+$/",$user)==0 or preg_match("/^[a-zA-Z0-9]+$/",$password)==0)
 		setResponse(500,"User name and password should be letters and numbers only");
-	$user=get_user($username, $password);
-//	setResponse(500, var_dump($user));
-	if($user == NULL)
+	$userid=get_userid($user, $password);
+	if($userid==0)
 		setResponse(500,"User was not found");
 	else
 		{
 		//session_start();
-		$_SESSION['username']=$username;
-		$_SESSION['user']=$user;
+		$_SESSION['username']=$user;
+		$_SESSION['userid']=$userid;
 		$session=session_id();
-		//setResponse(400,"userid is ".$userid);
-		setResponseWithContent(200,$session,$user->id);
-		//setResponseWithContent(200,$session,getJourneys($user));
+		//setResponse(400,$command,"userid is ".$userid);
+		setResponseWithContent(200,$session,getJourneys($userid));
 		//setResponse(200,$command,getUserXml($userid));
 		}
 } else {
@@ -126,22 +118,20 @@ if($session!=session_id())
 
 if($command=="getJourneys")
 	{
-	$journeys = getJourneys($_SESSION['user']);
-	$settings = getSettings($_SESSION['user']->id);
+	$journeys = getJourneys($_SESSION['userid']);
+	$settings = get_settings($_SESSION['userid']);
 	$content = '{"journeys":'.$journeys.',"settings":'.$settings.'}';
 	setResponseWithContent(200,"OK",$content);
 	}
 else if($command=="getMarkers")
 	{
 	$jid=$_POST['jid'];
-	setResponseWithContent(200,"OK",getMarkers($_SESSION['user']->id,$jid));
+	setResponseWithContent(200,"OK",getMarkers($_SESSION['userid'],$jid));
 	}
 else if($command=="logout")
 	{
 	//session_start();
-	unset($_SESSION['user']);
 	unset($_SESSION['username']);
-	
 	session_destroy();
 	header( 'Location: tracker1.php' );
 	//setResponse(200,$command,"Logged out");
@@ -150,7 +140,7 @@ else if($command=="deleteJourney")
 	{
 	$jid=$_POST['jid'];
 //	$id=intval($id);
-	$userid = $_SESSION['user']->id;
+	$userid = $_SESSION['userid'];
 	if($jid<=0 or check_userid_journey($jid,$userid)==false) {
 		setResponse(500,'journey id ['.$jid.'] or userid ['.$userid.'] is invalid');
 	}
@@ -162,8 +152,8 @@ else if($command=="deleteMarker")
 	$id=$_POST['id'];
 	$jid=$_POST['jid'];
 	//$id=intval($id);
-	$userid = $_SESSION['user']->id;
-	if($id<=0 or check_userid_journey($jid,$userid) == false) {
+	$userid = $_SESSION['userid'];
+	if($id<=0 or check_userid_journey($jid,$userid)==false) {
 		setResponse(500,'journey id ['.$jid.'] or userid ['.$userid.'] is invalid');
 	}
 	$result=deleteMarker($id);
@@ -176,7 +166,7 @@ else if($command=="moveMarker")
 	$jid=$_POST['jid'];
 	$lat=$_POST['lat'];
 	$lng=$_POST['lng'];
-	$userid = $_SESSION['user']->id;
+	$userid = $_SESSION['userid'];
 	//$id=intval($id);
 	if($id<=0 or check_userid_marker($id,$userid)==false) {
 		setResponse(500,'marker id ['.$id.'] or userid ['.$userid.'] is invalid');
@@ -189,7 +179,7 @@ else if($command=="setJourneyText")
 	{
 	$jid=$_POST['jid'];
 	//$jid=intval($jid);
-	$userid = $_SESSION['user']->id;
+	$userid = $_SESSION['userid'];
 	if($jid<=0 or check_userid_journey($jid,$userid)==false) {
 		setResponse(500,'journey id ['.$jid.'] or userid ['.$userid.'] is invalid');
 	}
@@ -202,7 +192,7 @@ else if($command=="setMarkerText")
 	{
 	$id=$_POST['id'];
 	$jid=$_POST['jid'];
-	$userid = $_SESSION['user']->id;
+	$userid = $_SESSION['userid'];
 	if($id<=0 or check_userid_journey($jid,$userid)==false)
 		setResponse(500,'journey id ['.$id.'] or userid ['.$userid.'] is invalid');
 	$description=$_POST['description'];
@@ -210,12 +200,20 @@ else if($command=="setMarkerText")
 	$result=setMarkerText($id,$description);
 	setResponse(100,$result." for ".$id);
 	}
+else if($command=="getSettings")
+	{
+	$result=get_settings($_SESSION['userid']);
+	if($result == -1) {
+		setResponse(500,'could not get settings for userid ['.$userid.'] it may not exist');
+	} else {
+		setResponse(200,$result);
+	}
+	}
 else if($command=="setSettings")
 	{
 	$units = $_POST['units'];
-	$sort = $_POST['sort'];
-	$userid = $_SESSION['user']->id;
-	$result=update_settings($userid,$units, $sort);
+	$userid = $_SESSION['userid'];
+	$result=update_settings($userid,$units);
 	if($result == 0) {
 		setResponse(500,'could not update settings for userid ['.$userid.'] it may not exist');
 	} else {

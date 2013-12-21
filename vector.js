@@ -113,7 +113,7 @@ function copyVector(vector)
 	 	this.z=vector.z;	
 		}
 		
-function distanceFrom(vector) // across the surface of the earth
+function distanceFrom(vector)
 {
 var d=this.dot(vector);
 return d <= 1 ? 6378137.0*Math.acos(d) : 0;

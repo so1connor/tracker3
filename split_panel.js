@@ -18,17 +18,26 @@ window.split_panel_module = function (left_panel, right_panel, resize_callback) 
 	right_width = 250,
 	draggerWidth = 20,
 	drag_resize = function (event) {
+		//debug.innerHTML = "drag_resize" + new Date().toString();
 		var dX = event.clientX - originX;
+		// if(left_width + dX < 200 && dX <= 0) {
+		// 	debug.innerHTML = "left too small";
+		// 	return;
+		// }
+		
+		// if(right_width - dX < 200 && dX >=0) {
+		// 	debug.innerHTML = "right too small";
+		// 	return;	
+		// }
 
-		//debug.innerHTML = "[" + (left_width + dX) + "-" + (right_width - dX) + "]";
+		debug.innerHTML = "[" + (left_width + dX) + "-" + (right_width - dX) + "]";
 					
-		left_panel.style.width = left_width + dX;
-		right_panel.style.width = right_width - dX;
+		left_panel.style.width = (left_width + dX) + 'px';
+		right_panel.style.width = (right_width - dX) + 'px';
 		
 		if(resize_callback !== null) {
 			resize_callback();
-			}
-		event.preventDefault();
+		}
 	},
 	drag_end = function (event) {
 		//drag_resize(event);
