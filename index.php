@@ -82,13 +82,14 @@ Logged in as <span id="username"><?php echo $_SESSION['username']?></span>&nbsp;
 <div class="dragger" id="drag"></div>
 <div class="right" id="right">
 	<div class="graph" id="graph">
-	<div class="graph-control" id="graph-control">
-	<span class="graph-speed" id="graph-speed">speed</span>
-	<span class="graph-ascent" id="graph-ascent"></span></div>
-	<div class="canvas-container" id="canvas-container">
-	<div class="graph-div" id="graph-div"></div>
-	<canvas class="graph-canvas" id="graph-canvas">This text is displayed if your browser does not support HTML5 Canvas.</canvas>
-	</div>
+		<div class="graph-control" id="graph-control">
+			<span class="graph-speed" id="graph-speed">speed</span>
+			<span class="graph-ascent" id="graph-ascent"></span>
+		</div>
+		<div class="canvas-container" id="canvas-container">
+			<div class="graph-div" id="graph-div"></div>
+			<canvas class="graph-canvas" id="graph-canvas">This text is displayed if your browser does not support HTML5 Canvas.</canvas>
+		</div>
 	</div>
 	<div class="map" id="map"></div>
 </div>

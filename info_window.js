@@ -71,16 +71,6 @@ window.info_node_module=function () {
 				}
 			editnode.style.display = text===undefined ? "inline": "none";
 
-//
-//			if(new_text.length === 0 )	{
-//				info_node.resetText(m);
-//				}
-//			if(new_text!==m.text)	{
-//				m.text=new_text;
-//				info_node.setText(m,new_text);
-//				utils.sendMessage("command=setMarkerText&jid="+j.jid+"&id="+m.id+"&description="+encodeURIComponent(new_text));
-//				}
-//
 			if(open_marker !== null){
 				if(text !== undefined) {
 					if(open_marker.text !== text) {

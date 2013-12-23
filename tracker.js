@@ -86,11 +86,11 @@ window.tracker = function () {
 			}
 		var h = 0;
 		for (var i = 0; i < journeys.length; i++) 	{
-			h+=journeys[i].node.clientHeight;
+			h += journeys[i].node.clientHeight;
 			if(journeys[i] === o) {
 				var markers = journeys[i].markers;
 				for (var k = 0; k < markers.length; k++) 	{
-					h+=markers[k].node.clientHeight;
+					h += markers[k].node.clientHeight;
 					if(markers[k] === m) {
 						return h;
 						}
@@ -153,9 +153,8 @@ window.tracker = function () {
 					var j=journeys[i];
 					jm.decorate(j);
 					j.index = i;
-					jm.setSpeedDivs(j);
+//					jm.setSpeedDivs(j);
 					jm.attachJourney(ui.panel,j);
-					//attachJourneyEvents(j,i);
 					}
 				journeys[0].title.onclick();
 				}
@@ -207,9 +206,10 @@ return {
 	openMarker : function(m,j) {
 		info_node.setMarker(j,m);
 		ui.openMapMarker(m.mapmarker);
+		// find position of this marker in the panel
 		var h = getScrollPosition(j,m);
 		if(h !== null) {
-			//debug.innerHTML = "" + getScrollPosition(o,m);
+			console.log(h);
 			var h0 = ui.panel.clientHeight / 2;
 			ui.panel.scrollTop = h - h0;
 			}
@@ -227,7 +227,7 @@ return {
 			});
 		},
 	resize : function() {
-		//jm.setSpeedDivs(open_journey);
+		jm.setSpeedDivs(open_journey);
 		graph.resize();
 		},
 	deleteJourney : function(j) {
@@ -288,7 +288,8 @@ return {
 		j.node.replaceChild(j.darrow,j.rarrow);			// is open
 		j.markernode.style.display="block";				// show the markers (if they have been loaded)
 		jm.setSpeedDivs(j);								// update the width of the speed bars
-		j.title.onclick();
+		this.showJourney(j);
+		//j.title.onclick();
 		//console.log(open_journey)
 		// don't add code here... it will run before previous line has completed
 		},
@@ -307,7 +308,7 @@ return {
 		sortselector = document.getElementById("sort");
 		
 		unitselector.onchange = setSettings;
-		console.log(sortselector);
+		//console.log(sortselector);
 		sortselector.onchange = setSettings;
 
 		// check logging in before initialising if reloading page

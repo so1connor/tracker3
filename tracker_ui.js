@@ -27,7 +27,7 @@ window.ui_module = function () {
 	mapmarkers = [],							/* array of Markers for the map */
 	nIcons = 10,  									/* no. of icons to use, icons define a colour band */
 	resizeTimeoutId,									/* windows timeout for resize events */
-	online = true,						/* for when not connected to internet - stops failures with maps */
+	online = false,						/* for when not connected to internet - stops failures with maps */
 	greyIcon = null,
 	greyIcons = [],
 	colourIcons = [],

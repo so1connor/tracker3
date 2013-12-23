@@ -2,23 +2,21 @@ window.graph_module = function () {
 
 	var graph_element = document.getElementById("graph"),
 	canvas = document.getElementById("graph-canvas"),
+	container = document.getElementById("canvas-container"),
 	graph_div = document.getElementById("graph-div"),
-	speed_span = document.getElementById("graph-speed"), 
+	speed_span = document.getElementById("graph-speed"),
 	ascent_span = document.getElementById("graph-ascent"), 
-	graph_marker = null,
+	graph_marker = null, // what's this
 	context = null,
 	active = false,
 	margin_left = 5, // what's this
-	dt,
+	duration,
 	t0,
-	dx,
-//	speeds = [], 
-	speed_dy,
-	alt_dy,
+	time_unit = 1,
 	x0 = 0,
 	x1 = 0,
-	graph_journey = null,
-	getGraphMarker = function(time) {
+	graph_journey = null, // the journey loaded into the graph
+	getGraphMarker = function(time) { // get the marker latest marker that is before "time"
 		var markers = graph_journey.markers;
 		if(markers === undefined) {
 			return null;
@@ -53,7 +51,7 @@ window.graph_module = function () {
 		
 		t0 = markers[0].t;
 		duration = markers[mlength - 1].t - t0;
-		time_unit = (canvas.width - margin_left) / duration;
+		time_unit = duration > 0 ? (canvas.width - margin_left) / duration : 0;
 		origin_x = margin_left;// + (markers[0].t - t0) * dx;
 		
 		
@@ -117,13 +115,18 @@ return {
 		},
 	showMarker : function(marker) {
 		graph_div.style.visibility = "visible";
-		x0 = margin_left + (marker.t - t0) * dx;
-		x1 = x0 + (marker.dt * dx);
-		graph_div.style.left = x0 + 'px';
+		x0 = margin_left + (marker.t - t0) * time_unit;
+		x1 = x0 + (marker.dt * time_unit);
+		graph_div.style.left = x0;
+		//console.log(x0);
+		//console.log(x1);
 		var w = x1 - x0;
 		//alert(marker.dt);
 		w = w <= 1 ? 1 : w;
-		graph_div.style.width = w + 'px';
+		graph_div.style.width = w;
+		graph_div.style.height = canvas.height;
+		
+		//console.log(w);
 		//debug.innerHTML = x0 + " "+ w;
 		//ui.showFocusMarker(markers[i].mapmarker);
 		},
@@ -133,8 +136,9 @@ return {
 		if(!active) {
 			return;
 			}
-		canvas.width = graph_element.clientWidth;
-		canvas.height = 50;
+		canvas.width = container.clientWidth;
+		canvas.height = container.clientHeight; 
+		// need to fix this
 		if(graph_journey !== null) {
 			drawGraph(graph_journey);
 			}
@@ -152,24 +156,27 @@ return {
 		document.getElementById("graph-control").style.display = "block";
 		document.getElementById("canvas-container").style.display = "block";
 		graph_div.style.display = "block";
-		canvas.width = graph_element.clientWidth;
-		canvas.height = 50;
+		canvas.width = container.clientWidth;
+		canvas.height = container.clientHeight; // need to fix this
 		
 		
 		canvas.onmouseout = function(event) {
 			tracker.hideMarker(graph_marker);
 			};
 		canvas.onmousemove = function(event) {
-			//			alert(event.offsetX+" " + event.offsetY);
+			//console.log(event);
 			if(graph_journey === null || graph_journey.markers === undefined) {
+				//console.log("no move");
 				return;
 			}			
 
 			tracker.hideMarker(graph_marker);
 			
-			if(event.offsetX < x0 || event.offsetX > x1) {
-				var t = t0 + (dt * event.offsetX) / canvas.width;
+			if(event.offsetX <= x0 || event.offsetX >= x1) {
+				var t = t0 + (duration * event.offsetX) / canvas.width;
+				//console.log(t);
 				graph_marker = getGraphMarker(t);
+				//console.log(graph_marker);
 			}
 			//alert("t0="+t0+" t=" +t+" dt="+dt);
 			//speed_span.innerHTML = graph_journey.markers[graph_index].speed.toFixed(2) + " m/s";
@@ -177,7 +184,6 @@ return {
 			//if(graph_index !== null) {
 				//alert("mob");
 			tracker.showMarker(graph_marker);
-
 			};
 		
 		canvas.onclick = function(event) {

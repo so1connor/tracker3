@@ -15,8 +15,8 @@ _container=document.createElement("div"),
 //open_journey = null,
 vector0=new Vector3D(),
 vector1=new Vector3D(),
-speed_offset,
-max_speed_width = 200,
+//speed_offset,
+//max_speed_width = 200,
 //speeds,
 //distance = 0;
 //speed_list = [];
@@ -257,7 +257,7 @@ return {
 		
 		j.divnode.onclick = function ()	{
 			utils.setEditor(j.node, j.divnode, "journey-textarea", j.divnode.offsetWidth - 15, function (new_text) {
-				j.editnode.style.display = new_text.length===0 ? "inline" : "none";
+				j.editnode.style.display = new_text.length === 0 ? "inline" : "none";
 				j.divnode.style.display = new_text.length ===0 ? "none" : "block";
 				if(new_text!==j.text) {
 					j.text=new_text;
@@ -277,7 +277,7 @@ return {
 		j.update = function() {
 			measureJourney(j);
 			//setAltitudeBounds(j);
-			j.statistics.innerHTML = utils.getDistanceString(j.d) + " " + j.metrics.max_speed;
+			j.statistics.innerHTML = utils.getDistanceString(j.d);// + " " + j.metrics.max_speed;
 			};
 		j.update();
 		},
@@ -290,19 +290,25 @@ return {
 			//console.log(j);
 			return;
 		}
-		var w = j.node.clientWidth - j.markers[0].titlenode.clientWidth + 35;
+		// note clientWidth does not work here???
+		// taking off 50 provides some slack
+		var w = j.node.clientWidth - j.markers[0].titlenode.offsetWidth - 50;  
 		//w = w > 500 ? 500 : w;
 		//console.log(w);
+		//console.log(j.markers[0].titlenode.offsetWidth);
 		var factor = w / j.metrics.max_speed;
-
+		//console.log(factor);
+		//console.log(j.metrics.max_speed);
+		
+		
 		//		alert(j.node.clientWidth + " " + j.markers[0].titlenode.offsetWidth);
 		//speedwidth = j.markers[0].titlenode.style.width*100 / j.node.clientWidth;
 		//alert("title="+j.markers[0].titlenode.style.width);
 		//		speedwidth = j.node.clientWidth / 2;
 
 		for(var i=0; i < j.markers.length; i++) 	{
-			//j.markers[i].speed0.style.width = j.markers[i].speed * factor;
-			j.markers[i].speed0.style.width = j.markers[i].speed * 80 / j.metrics.max_speed + "%";
+			j.markers[i].speed0.style.width = j.markers[i].speed * factor;
+			//j.markers[i].speed0.style.width = j.markers[i].speed * 80 / j.metrics.max_speed + "%";
 			
 			
 		}
