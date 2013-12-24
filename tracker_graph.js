@@ -9,7 +9,7 @@ window.graph_module = function () {
 	graph_marker = null, // what's this
 	context = null,
 	active = false,
-	margin_left = 5, // what's this
+	margin_left = 0, // what's this
 	duration,
 	t0,
 	time_unit = 1,
@@ -57,16 +57,6 @@ window.graph_module = function () {
 		
 		graph_journey = journey;
 		
-		//		context.beginPath();
-		//		context.strokeStyle = "#999";
-		//		context.lineWidth = 0.5;
-		//		for(var i = speeds.length; i >= 0; i--) {
-		//			var grid_y = canvas.height - speed_dy * speeds[i];
-		//			context.moveTo(0,grid_y);
-		//			context.lineTo(canvas.width, grid_y);
-		//			}
-		//		context.stroke();
-
 		context.beginPath();
 		context.strokeStyle = "#444";
 		context.lineWidth = 1.0;
@@ -89,14 +79,6 @@ window.graph_module = function () {
 		}
 		context.stroke();
 
-		//		context.beginPath();
-		//		context.strokeStyle = "#999";
-		//		context.lineWidth = 0.5;
-		//		context.moveTo(0,canvas.height);
-		//		for(var i=0; i< mlength; i++) {
-		//			context.lineTo((markers[i].t - t0) * dx,canvas.height - (markers[i].acc * acc_dy));
-		//		}
-		//		context.stroke();
 
 		speed_span.innerHTML = "Average speed " + utils.getSpeedMinutes(graph_journey.metrics.average_speed) + " " + utils.getSpeedMinuteUnit();
 		//		ascent_span.innerHTML = "Ascent " + graph_journey.ascent+ " m";
@@ -161,7 +143,8 @@ return {
 		
 		
 		canvas.onmouseout = function(event) {
-			tracker.hideMarker(graph_marker);
+			console.log("mouse out");
+			//tracker.hideMarker(graph_marker);
 			};
 		canvas.onmousemove = function(event) {
 			//console.log(event);
@@ -170,20 +153,25 @@ return {
 				return;
 			}			
 
-			tracker.hideMarker(graph_marker);
-			
-			if(event.offsetX <= x0 || event.offsetX >= x1) {
+			var marker = null;
+			if(event.offsetX < x0 || event.offsetX > x1) {
 				var t = t0 + (duration * event.offsetX) / canvas.width;
 				//console.log(t);
-				graph_marker = getGraphMarker(t);
+				marker = getGraphMarker(t);
 				//console.log(graph_marker);
+			}
+
+			if(marker !== null && marker !== graph_marker) {
+				tracker.hideMarker(graph_marker);
+				tracker.showMarker(marker);
+				graph_marker = marker;
 			}
 			//alert("t0="+t0+" t=" +t+" dt="+dt);
 			//speed_span.innerHTML = graph_journey.markers[graph_index].speed.toFixed(2) + " m/s";
 			//ascent_span.innerHTML = graph_journey.markers[graph_index].alt+ " m";;
 			//if(graph_index !== null) {
 				//alert("mob");
-			tracker.showMarker(graph_marker);
+			//tracker.showMarker(graph_marker);
 			};
 		
 		canvas.onclick = function(event) {

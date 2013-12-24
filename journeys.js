@@ -54,9 +54,9 @@ measureJourney = function (j) {
 		}
 		distance += dx;
 		vector0.copyVector(vector1); //save for next time
-		marker1.speed = speed;
-		marker1.dt = dt;
-		marker1.dx = dx;
+		marker0.speed = speed;
+		marker0.dt = dt;
+		marker0.dx = dx;
 		speeds.push(speed);
 		if(speed > j.metrics.max_speed) {
 			j.metrics.max_speed = speed;

@@ -186,6 +186,7 @@ window.tracker = function () {
 
 return {
 	showMarker : function(m) {
+		console.log(m);
 		if(m === null) {
 			return;
 		}

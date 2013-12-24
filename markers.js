@@ -50,7 +50,7 @@ window.marker_module = function() {
 			m.node.onmouseout=function(){
 				tracker.hideMarker(m);
 				};
-			m.titlenode.onclick=function() {			
+			m.node.onclick=function() {			
 				tracker.openMarker(m,j);
 				};
 			m.delnode.onclick=function() {
