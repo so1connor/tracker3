@@ -138,14 +138,20 @@ return {
 		document.getElementById("graph-control").style.display = "block";
 		document.getElementById("canvas-container").style.display = "block";
 		graph_div.style.display = "block";
+
 		canvas.width = container.clientWidth;
 		canvas.height = container.clientHeight; // need to fix this
 		
+		// graph_div.onmouseout = function(event) {
+		// 	//console.log("overlay mouse out");
+		// 	event.preventDefault();
+		// }
 		
 		canvas.onmouseout = function(event) {
 			console.log("mouse out");
 			//tracker.hideMarker(graph_marker);
 			};
+			
 		canvas.onmousemove = function(event) {
 			//console.log(event);
 			if(graph_journey === null || graph_journey.markers === undefined) {
@@ -172,6 +178,7 @@ return {
 			//if(graph_index !== null) {
 				//alert("mob");
 			//tracker.showMarker(graph_marker);
+			//event.preventDefault();
 			};
 		
 		canvas.onclick = function(event) {
